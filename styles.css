@@ -1,0 +1,30 @@
+a {
+    position: fixed;
+}
+h1 {
+    width: 200px;
+    height: 100px;
+    background-color: yellow;
+    box-shadow: 1px 3px blue;
+}
+h2 {
+    position: fixed;
+    top: 30%;
+    left: 65%;
+    text-align: center;
+}
+h3 {
+    width: 50px;
+    height: 200px;
+    background-color: rgba(100, 200, 30, 0.8);
+    padding-left: 15px;
+    padding-top: 40px;
+    border: 1px dotted #333333;
+}
+img {
+    width: 100vh;
+    height: 100vh;
+}
+.missing {
+    display: none;
+}

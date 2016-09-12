@@ -1,0 +1,28 @@
+<!DOCTYPE>
+<html>
+    <head>
+        <link href="styles.css" type="text/css" rel="stylesheet"/>
+        <script   src="https://code.jquery.com/jquery-3.1.0.min.js"   integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="   crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <a href="index.html">
+            <h2>I'M TINY RICK</h2>
+            <img src="https://pbs.twimg.com/profile_images/686425525032632320/D6_xAbDK_400x400.jpg"/>
+        </a>
+    </body>
+    <script>
+        setInterval(function() {
+            var img = $('img');
+            console.log(img);
+            if (img.hasClass('missing')) {
+                $('h2').addClass('missing');
+                img.removeClass('missing');
+                } else {
+                $('h2').removeClass('missing');
+                img.addClass('missing');
+            }
+        }, 1000);
+    </script>
+</html>
+
+
