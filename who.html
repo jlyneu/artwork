@@ -3,9 +3,11 @@
     <head>
         <link href="styles.css" type="text/css" rel="stylesheet"/>
         <script   src="https://code.jquery.com/jquery-3.1.0.min.js"   integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="   crossorigin="anonymous"></script>
+        <script src="three.js"></script>
+        <script src="Detector.js"></script>
     </head>
     <body>
-        <a href="index.html">
+        <a id="next" href="javascript:void(0);">
             <h2 class="missing">I'M TINY RICK</h2>
             <img src="https://pbs.twimg.com/profile_images/686425525032632320/D6_xAbDK_400x400.jpg"/>
         </a>
@@ -13,7 +15,6 @@
     <script>
         setInterval(function() {
             var img = $('img');
-            console.log(img);
             if (img.hasClass('missing')) {
                 $('h2').addClass('missing');
                 img.removeClass('missing');
@@ -22,7 +23,42 @@
                 img.addClass('missing');
             }
         }, 1000);
+        $("#next").click(function() {
+            if (Detector.webgl) {
+                var cover = $("<div class='cover black'></div>");
+                $("body").append(cover);
+                $(cover).animate({
+                    'opacity': 1.0
+                }, 2000, function() {
+                    window.location = "./fricktal.html";
+                });
+            } else {
+                var cover = $("<div class='cover white'></div>");
+                $("body").append(cover);
+                $(cover).animate({
+                    'opacity': 1.0
+                }, 2000, function() {
+                    window.location = "./index.html";
+                });
+            }
+        });
     </script>
+    <style>
+        .black {
+            background-color: black;
+        }
+        .white {
+            background-color: white;
+        }
+        .cover {
+            width: 100vh;
+            height: 100vh;
+            opacity: 0.0;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+    </style>
 </html>
 
 

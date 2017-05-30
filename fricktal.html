@@ -1,0 +1,196 @@
+<html>
+	<head>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+        <marquee id="marquee"><a id="to-home" href="javascript:void(0);">???</a></marquee>
+        <!-- Rick Sanchez 3D Model by VilaPereira https://sketchfab.com/models/6edff67bc4264917b899882a9ed73b3b-->
+		<script src="three.js"></script>
+        <script   src="https://code.jquery.com/jquery-3.1.0.min.js"   integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="   crossorigin="anonymous"></script>
+		<script>
+
+            var count = 0;
+
+            var r = 0,
+                g = 0,
+                b = 0;
+
+			var scene = new THREE.Scene();
+            scene.background = new THREE.Color( ["rgb(", r, ",", g, ",", b, ")"].join("") );
+			var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
+
+			var renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			document.body.appendChild( renderer.domElement );
+
+			var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+			var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+			var cube = new THREE.Mesh( geometry, material );
+
+            var mesh = null;
+            function initMesh() {
+                var loader = new THREE.JSONLoader();
+                loader.load("Rick.json", function(geometry, materials) {
+                    mesh = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
+                    scene.add(mesh);
+                    mesh.position.set(1, -2, -500);
+                });
+            }
+
+            function initLights() {
+                var light = new THREE.AmbientLight(0xffffff);
+                scene.add(light);
+            }
+
+            function burp() {
+                var burp = new Audio("burp.mp3");
+                burp.play();
+            }
+
+            initMesh();
+            initLights();
+
+			camera.position.z = 3;
+
+            function walk(curr) {
+                if (curr < 2) {
+                    return 2;
+                } else if (curr > 254) {
+                    return 254;
+                } else {
+                    return Math.random() < 0.5 ? curr - 2 : curr + 2;
+                }
+            }
+
+            function setNextBackground() {
+                r = walk(r);
+                b = walk(b);
+                g = walk(g);
+                scene.background = new THREE.Color( ["rgb(", r, ",", g, ",", b, ")"].join("") );
+            }
+
+            var speed = 10
+            var stopSpinning = false;
+
+            // rotate the object about its y-axis and use random walk with
+            // rgb colors to change background color. change to renderFinishSpin
+            // when the user clicks
+			var renderSpinIdle = function () {
+                if (stopSpinning) {
+                    requestAnimationFrame( renderFinishSpin );
+                    stopSpinning = false;
+                } else {
+                    requestAnimationFrame( renderSpinIdle );
+                    mesh.translateX( -1 );
+    				mesh.rotation.y += 0.01;
+                    mesh.translateX( 1 );
+                    setNextBackground();
+                }
+                renderer.render(scene, camera);
+			};
+
+
+            // with the object starting far from the camera,
+            // move object towards the camera then transition
+            // to renderSpinIdle
+            var renderObjEnter = function() {
+                if (mesh == null) {
+                    requestAnimationFrame(renderObjEnter);
+                    renderer.render(scene, camera);
+                } else if (mesh.position.z < 0) {
+                    requestAnimationFrame(renderObjEnter);
+                    mesh.translateZ( speed );
+                    speed = Math.max(speed - 0.1, 1);
+                    renderer.render(scene, camera);
+                } else {
+                    requestAnimationFrame(renderSpinIdle);
+                    $(document).on("click", function() {
+                        stopSpinning = true;
+                        $(document).off("click");
+                    });
+                    speed = 10;
+                    renderer.render(scene, camera);
+                }
+            }
+
+            var renderFinishSpin = function() {
+                if (Math.abs(mesh.rotation.y % (2 * Math.PI)) < 0.12) {
+                    requestAnimationFrame(renderZoomIn);
+                    mesh.rotation.y = 0;
+                    renderer.render(scene, camera);
+                } else {
+                    requestAnimationFrame(renderFinishSpin);
+                    mesh.translateX( -1 );
+                    mesh.rotation.y += 0.05;
+                    mesh.translateX( 1 );
+                    setNextBackground();
+                    renderer.render(scene, camera);
+                }
+
+            }
+
+            var renderZoomIn = function() {
+                if (camera.position.z > 0.5) {
+                    requestAnimationFrame(renderZoomIn);
+                    camera.position.z -= 0.1;
+                    renderer.render(scene, camera);
+                } else {
+                    requestAnimationFrame(renderObjEnter);
+                    r = 75;
+                    g = 149;
+                    b = 153;
+                    scene.background = new THREE.Color( "rgb(75, 149, 153)" );
+                    scene.remove(mesh);
+                    burp();
+                    camera.position.z = 3;
+                    initMesh();
+                    count++;
+                    if (count > 2) {
+                        $("#to-home").show();
+                    }
+                    renderer.render(scene, camera);
+                }
+            }
+
+            var backToHome = function() {
+                var cover = $("<div class='cover'></div>");
+                $("body").append(cover);
+                $(cover).animate({
+                    'opacity': 1.0
+                }, 2000, function() {
+                    window.location = "./index.html";
+                });
+            }
+
+            renderObjEnter();
+
+            $("#to-home").click(backToHome);
+
+		</script>
+        <style>
+            #marquee {
+                display: none;
+                position: fixed;
+                bottom: 0;
+            }
+            #to-home {
+                background-color: transparent;
+                color: white;
+                size: 20px;
+                text-decoration: none;
+            }
+            .cover {
+                background-color: white;
+                width: 100vh;
+                height: 100vh;
+                opacity: 0.0;
+                position: fixed;
+                top: 0;
+                left: 0;
+            }
+        </style>
+	</body>
+</html>
